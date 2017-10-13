@@ -6,7 +6,8 @@
     Date created       : MM/DD/YYYY
     Date last modified : MM/DD/YYYY
     Python Version     : 2.7
-    Description        :
+    Description        : Learning to build an basic API service with Python Flask Framework
+    Reference          : https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask
 '''
 
 from flask import Flask, jsonify, abort
@@ -33,7 +34,6 @@ tasks = [
         'done': False
     }
 ]
-
 
 @auth.get_password
 def get_password(username):
