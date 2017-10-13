@@ -13,7 +13,10 @@ from flask import Flask, jsonify, abort
 from flask import make_response
 from flask import request
 from flask import url_for
+from flask_httpauth import HTTPBasicAuth
 
+
+auth = HTTPBasicAuth()
 app = Flask(__name__)
 
 tasks = [
@@ -31,6 +34,17 @@ tasks = [
     }
 ]
 
+
+@auth.get_password
+def get_password(username):
+    if username == 'ram':
+        return 'ram'
+    return None
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 401)
+
 def make_public_task(task):
     new_task = {}
     for field in task:
@@ -45,6 +59,7 @@ def get_tasks():
     return jsonify({'tasks': [make_public_task(task) for task in tasks]})
 
 @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
+@auth.login_required
 def get_task(task_id):
     task = [task for task in tasks if task['id'] == task_id]
     if len(task) == 0:
@@ -93,6 +108,10 @@ def delete_task(task_id):
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 403)
 
 if __name__ == '__main__':
     app.run(debug=True)
